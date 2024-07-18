@@ -10,22 +10,17 @@ const {
 //import user input functionality
 const prompt = require('prompt-sync')();
 
-// Create a new keypair
-const newPair = new Keypair();
+const userPublicKey = prompt("Enter your Public Key : ");
 
-// Extract the public key from the keypair
-const publicKey = new PublicKey(newPair._keypair.publicKey).toString();
 
 // Connect to the Devnet
 const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-
-console.log("Public Key: ", publicKey);
 
 // Get the wallet balance from a given private key
 const getWalletBalance = async () => {
     try {
         // Get balance of the user provided wallet address
-        const walletBalance = await connection.getBalance(new PublicKey(publicKey));
+        const walletBalance = await connection.getBalance(new PublicKey(userPublicKey));
         console.log(`Wallet balance: ${parseInt(walletBalance) / LAMPORTS_PER_SOL} SOL`);
     } catch (err) {
         console.log(err);
@@ -35,8 +30,9 @@ const getWalletBalance = async () => {
 const airDropSol = async () => {
     try {
         // Request airdrop of 2 SOL to the wallet
-        console.log("Airdropping some SOL to the wallet!");
-        const fromAirDropSignature = await connection.requestAirdrop(new PublicKey(publicKey),
+        console.log(`Airdropping some SOL to your wallet ${userPublicKey} !`);
+        const fromAirDropSignature = await connection.requestAirdrop(
+            new PublicKey(userPublicKey),
             2 * LAMPORTS_PER_SOL
         );
         await connection.confirmTransaction(fromAirDropSignature);
